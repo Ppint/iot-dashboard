@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #e5e7eb;
+  --accent: #22c55e;
 }
 
 @theme inline {
@@ -14,8 +15,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #000000;
+    --foreground: #e5e7eb;
   }
 }
 
@@ -24,3 +25,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.text-accent { color: var(--accent); }
+.bg-accent { background-color: color-mix(in oklab, var(--accent) 20%, transparent); }
+.ring-accent { --tw-ring-color: color-mix(in oklab, var(--accent) 50%, transparent); }
