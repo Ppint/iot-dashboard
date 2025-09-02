@@ -1,3 +1,5 @@
+export type AlertSeverity = "critical" | "none";
+
 export interface SensorData {
   button_pressed: boolean;
   led: boolean;
@@ -8,6 +10,8 @@ export interface SensorData {
   rt_ms: number;
   soil: number;
   ts_esp: number;
+  alert_severity: AlertSeverity;
+  alert_reasons: Array<string>;
 }
 
 export interface SensorSnapshot {

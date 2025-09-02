@@ -38,14 +38,16 @@ function coerceSensorData(entry: unknown): SensorData | null {
         : (entry as Record<string, unknown>);
     if (!obj || typeof obj !== "object") return null;
     const rt_ms = coerceNumber(obj["rt_ms"]);
-    const pi_temp = coerceNumber(obj["pi_temp"]);
-    const pi_hum = coerceNumber(obj["pi_hum"]);
+    const pi_temp = coerceNumber(obj["pi_temp"]) ?? coerceNumber(obj["pi-temp"]);
+    const pi_hum = coerceNumber(obj["pi_hum"]) ?? coerceNumber(obj["pi-hum"]);
     const lux = coerceNumber(obj["lux"]);
     const soil = coerceNumber(obj["soil"]);
     const ledRaw = obj["led"];
     const rainRaw = obj["rain"];
     const buttonPressedRaw = obj["button_pressed"];
     const ts_esp = coerceNumber(obj["ts_esp"]);
+    const alertSeverityRaw = obj["alert_severity"];
+    const alertReasonsRaw = obj["alert_reasons"];
 
     if (rt_ms == null) return null;
     return {
@@ -69,6 +71,17 @@ function coerceSensorData(entry: unknown): SensorData | null {
           ? buttonPressedRaw
           : buttonPressedRaw === "true" || buttonPressedRaw === 1,
       ts_esp: ts_esp ?? 0,
+      alert_severity:
+        alertSeverityRaw === "critical" ? "critical" : "none",
+      alert_reasons: Array.isArray(alertReasonsRaw)
+        ? (alertReasonsRaw.filter((v) => typeof v === "string") as Array<string>)
+        : alertReasonsRaw && typeof alertReasonsRaw === "object"
+        ? Object.values(alertReasonsRaw as Record<string, unknown>)
+            .filter((v) => typeof v === "string")
+            .map((v) => v as string)
+        : typeof alertReasonsRaw === "string" && alertReasonsRaw.trim() !== ""
+        ? [alertReasonsRaw]
+        : [],
     };
   } catch {
     return null;

@@ -33,6 +33,9 @@ export default function IoTDashboard() {
   const currentData = current;
   const historicalData = history;
 
+  const severity = currentData?.alert_severity ?? "none";
+  const alertReasons: Array<string> = currentData?.alert_reasons ?? [];
+
   const getSensorStatus = (value: number, type: string) => {
     switch (type) {
       case "temperature":
@@ -51,9 +54,8 @@ export default function IoTDashboard() {
           return { status: "Bright", variant: "default" as const };
         return { status: "Good", variant: "success" as const };
       case "soil":
-        if (value > 3000)
-          return { status: "Dry", variant: "destructive" as const };
-        if (value < 1500) return { status: "Wet", variant: "default" as const };
+        if (value < 30) return { status: "Dry", variant: "destructive" as const };
+        if (value > 70) return { status: "Wet", variant: "default" as const };
         return { status: "Moist", variant: "success" as const };
       default:
         return { status: "Unknown", variant: "muted" as const };
@@ -75,6 +77,28 @@ export default function IoTDashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Current Status */}
+        <Card className={severity === "critical" ? "border-red-500 border-4" : undefined}>
+          <CardHeader>
+            <CardTitle>Current Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {severity === "critical" ? (
+              <div>
+                <p className="text-base font-medium text-destructive">CRITICAL</p>
+                {alertReasons.length > 0 ? (
+                  <ul className="mt-2 list-disc list-inside text-sm text-destructive">
+                    {alertReasons.map((reason, idx) => (
+                      <li key={idx}>{reason}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            ) : (
+              <p className="text-base font-medium text-foreground">NORMAL</p>
+            )}
+          </CardContent>
+        </Card>
         {/* Status Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Temperature Card */}
@@ -161,7 +185,7 @@ export default function IoTDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-semibold text-foreground">
-                {typeof currentData?.soil === "number" ? currentData.soil : "—"}
+                {typeof currentData?.soil === "number" ? `${currentData.soil.toFixed(0)}%` : "—"}
               </div>
               <Badge
                 className="mt-2"
@@ -195,8 +219,8 @@ export default function IoTDashboard() {
               <CloudRain className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <Badge variant={currentData?.rain ? "default" : "muted"}>
-                {currentData?.rain ? "RAIN DETECTED" : "NO RAIN"}
+              <Badge variant={!currentData?.rain ? "default" : "muted"}>
+                {!currentData?.rain ? "RAIN DETECTED" : "NO RAIN"}
               </Badge>
             </CardContent>
           </Card>
