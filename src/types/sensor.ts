@@ -12,11 +12,14 @@ export interface SensorData {
   ts_esp: number;
   alert_severity: AlertSeverity;
   alert_reasons: Array<string>;
+  leaf_color: LeafColor;
 }
 
 export interface SensorSnapshot {
   id: string;
   data: SensorData;
 }
+
+export type LeafColor = "Green" | "Yellow" | "unknown";
 
 
