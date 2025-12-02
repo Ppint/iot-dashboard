@@ -48,6 +48,7 @@ function coerceSensorData(entry: unknown): SensorData | null {
     const ts_esp = coerceNumber(obj["ts_esp"]);
     const alertSeverityRaw = obj["alert_severity"];
     const alertReasonsRaw = obj["alert_reasons"];
+    const leafColorRaw = obj["leaf_color"];
 
     if (rt_ms == null) return null;
     return {
@@ -82,6 +83,14 @@ function coerceSensorData(entry: unknown): SensorData | null {
         : typeof alertReasonsRaw === "string" && alertReasonsRaw.trim() !== ""
         ? [alertReasonsRaw]
         : [],
+      leaf_color:
+        typeof leafColorRaw === "string"
+          ? /^(green)$/i.test(leafColorRaw)
+            ? "Green"
+            : /^(yellow)$/i.test(leafColorRaw)
+            ? "Yellow"
+            : "unknown"
+          : "unknown",
     };
   } catch {
     return null;
